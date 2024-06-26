@@ -1,12 +1,12 @@
 import sql from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export const Redirector = async () => {
   const { getUser } = getKindeServerSession();
   const kindeUser = await getUser();
 
-  if (!kindeUser) throw new Error("KINDE USER NOT FOUND");
+  if (!kindeUser) notFound();
 
   const [user] = await sql(
     `
@@ -20,7 +20,6 @@ export const Redirector = async () => {
 
   let count = 0;
   while (count < 3) {
-    console.log("[count]", count);
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const [user] = await sql(
@@ -36,5 +35,5 @@ export const Redirector = async () => {
     count++;
   }
 
-  throw new Error("USER NOT FOUND");
+  notFound();
 };
